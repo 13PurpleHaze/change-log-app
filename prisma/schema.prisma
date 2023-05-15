@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id       Int       @id @default(autoincrement())
+  username String    @unique
+  password String
+  cratedAt DateTime  @default(now())
+  products Product[]
+}
+
+model Product {
+  id         Int      @id @default(autoincrement())
+  name       String   @db.VarChar(255)
+  user_id    Int
+  user_id_fk User     @relation(fields: [user_id], references: [id])
+  cratedAt   DateTime @default(now())
+  updates    Update[]
+}
+
+enum UPDATE_STATUSE {
+  IN_PROGRESS
+  SHIPPED
+  DEPRECATED
+}
+
+model Update {
+  id          Int            @id @default(autoincrement())
+  title       String
+  body        String
+  status      UPDATE_STATUSE @default(IN_PROGRESS)
+  version     String?
+  asset       String?
+  product_id  Int
+  product     Product        @relation(fields: [product_id], references: [id])
+  cratedAt    DateTime       @default(now())
+  updatedAt   DateTime?
+  UpdatePoint UpdatePoint[]
+}
+
+model UpdatePoint {
+  id          Int       @id @default(autoincrement())
+  name        String    @db.VarChar(255)
+  description String
+  update_id   Int
+  update      Update    @relation(fields: [update_id], references: [id])
+  cratedAt    DateTime  @default(now())
+  updatedAt   DateTime?
+}
