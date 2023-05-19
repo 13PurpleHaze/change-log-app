@@ -1,33 +1,29 @@
 import { Router } from "express";
-import { signUp } from "../handlers/user";
-import { body, validationResult } from "express-validator"; 
+import { validate } from "../middlewares/valdation-middleware";
+import { storeProduct } from "../validation/add-product-rules";
+import { updateProducts } from "../validation/update-products-rules";
+import { storeUpdates } from "../validation/add-update-rules";
+import { updateUpdates } from "../validation/edit-updates-rules";
+import { createProduct, destroyProduct, getProduct, getProducts, updateProduct } from "../handlers/product";
+import { createUpdate, getUpdate, getUpdates } from "../handlers/update";
 
 const router = Router();
-router.get("/products", (req, res) => {
-    res.json({message: "products"});
-})
 
-router.get("/products/:id", () => {})
-router.post("/products", () => {})
-router.put("/products/:id", body('name').isString(), (req, res) => {
-    const errors = validationResult(req);
-    if(errors) {
-        res.status(400);
-        res.json(errors);
-        return;
-    }
-    res.json({message: "ok"});
-})
-router.delete("/products/:id", (req, res) => {
-    res.json({message: "deleted"});
-})
+// products
 
+router.get("/products", getProducts)
+router.get("/products/:id", getProduct)
+router.post("/products", storeProduct, validate, createProduct)
+router.put("/products/:id", updateProducts, validate, updateProduct)
+router.delete("/products/:id", destroyProduct)
 
-router.get("/update", () => {})
-router.get("/update/:id", () => {})
-router.post("/update", [body('title').isString(), body('body').isString(), body('status').isInt(), body('version')],(req, res) => {
+// update
 
-})
+router.get("/products/:product_id/updates", getUpdates)
+router.get("/products/:product_id/updates/:id", getUpdate)
+router.post("/products/:product_id/updates", storeUpdates, validate, createUpdate)
+router.put("/products/:product_id/updates/:id", updateUpdates, validate, (req, res) => {})
+router.delete("/products/:product_id/updates/:id");
 
 
 export default router;
