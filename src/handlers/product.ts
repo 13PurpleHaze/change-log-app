@@ -1,6 +1,7 @@
 import prisma from "../../db";
+import { Request, Response } from "express";
 
-export const getProducts = async (req, res, next) => {
+export const getProducts = async (req: Request, res: Response, next) => {
     try {
         const user = await prisma.user.findUnique({
             where: {
