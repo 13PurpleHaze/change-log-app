@@ -1,4 +1,4 @@
-import prisma from "../../db";
+import prisma from "../db";
 import { comparePassword, createJWT } from "../modules/auth";
 import { hashPassword } from "../modules/auth";
 

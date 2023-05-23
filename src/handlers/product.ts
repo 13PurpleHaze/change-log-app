@@ -1,17 +1,9 @@
-import prisma from "../../db";
-import { Request, Response } from "express";
+import prisma from "../db";
 
-export const getProducts = async (req: Request, res: Response, next) => {
+export const getProducts = async (req, res, next) => {
     try {
-        const user = await prisma.user.findUnique({
-            where: {
-                id: req.user.id
-            },
-            include: {
-                products: true,
-            }
-        });
-        res.status(200).json({ data: user.products });
+        const products = await prisma.product.findMany();
+        res.status(200).json({ data: products });
     } catch (error) {
         error.type = 'input';
         next(error);
@@ -22,7 +14,6 @@ export const getProduct = async (req, res) => {
     const product = await prisma.product.findFirst({
         where: {
             id: Number(req.params.id),
-            user_id: req.user.id,
         },
     });
     res.status(200).json({ data: product });

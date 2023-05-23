@@ -1,7 +1,7 @@
-import app from './server';
+import app from './src/server';
 import dotenv from "dotenv";
 dotenv.config()
-  
-app.listen(8080, () => {
-    console.log("server...");
+
+app.listen(process.env.PORT, () => {
+    console.log("server is runnig...");
 });
