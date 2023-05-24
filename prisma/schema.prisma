@@ -16,6 +16,7 @@ model User {
   password String
   cratedAt DateTime  @default(now())
   products Product[]
+  Token    Token[]
 }
 
 model Product {
@@ -55,4 +56,10 @@ model UpdatePoint {
   update      Update    @relation(fields: [update_id], references: [id])
   cratedAt    DateTime  @default(now())
   updatedAt   DateTime?
+}
+
+model Token {
+  user_id      Int    @id
+  user         User   @relation(fields: [user_id], references: [id])
+  refreshToken String @db.VarChar(255)
 }
