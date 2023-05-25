@@ -1,4 +1,4 @@
-import * as user from '../user';
+import * as user from '../user-controller';
 
 describe('user handler', () => {
     it('should create new user', async () => {

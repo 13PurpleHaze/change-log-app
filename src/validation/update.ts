@@ -1,5 +1,15 @@
 import { body, param } from "express-validator";
 import prisma from "../db";
+import ApiError from "../exeptions/api-error";
+
+export const getUpdateRules = [
+    param('id').notEmpty().isInt(),
+    param('product_id').notEmpty().isInt(),
+];
+
+export const getUpdatesRules = [
+    param('product_id').notEmpty().isInt(),
+];
 
 export const createUpdateRules = [
     body('title').notEmpty().isString(),
@@ -14,7 +24,7 @@ export const createUpdateRules = [
             }
         });
         if (!product) {
-            throw new Error('This update is not exists');
+            throw ApiError.BadRequest("Invalid input");
         }
     }),
 ];
@@ -32,7 +42,12 @@ export const editUpdatesRules = [
             }
         });
         if (!product) {
-            throw new Error('This update is not exists');
+            throw ApiError.BadRequest("Invalid input");
         }
     }),
+];
+
+export const destroyUpdateRules = [
+    param('id').notEmpty().isInt(),
+    param('product_id').notEmpty().isInt(),
 ];
