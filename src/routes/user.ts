@@ -1,13 +1,13 @@
 import { Router } from "express";
-import { protect } from "../modules/auth";
 import UserController from "../controllers/user-controller";
+import { auth } from "../middlewares/auth";
+
 const router = Router();
-const userControlelr = new UserController();
+const userController = new UserController();
 
-router.post("/login", userControlelr.signIn);
-router.post("/register", userControlelr.signUp);
-router.post("/logout", protect, userControlelr.signOut);
-router.post("/refresh", protect, userControlelr.refresh);
+router.post("/login", userController.signIn);
+router.post("/register", userController.signUp);
+router.post("/logout", auth, userController.signOut);
+router.post("/refresh", auth, userController.refresh);
 
-const auth = router;
-export default auth;
+export const authRouter = router;

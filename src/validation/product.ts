@@ -1,5 +1,4 @@
 import { body, param } from "express-validator";
-import ApiError from "../exeptions/api-error";
 
 export const createProductRules = [
     body('name').notEmpty().isString(),

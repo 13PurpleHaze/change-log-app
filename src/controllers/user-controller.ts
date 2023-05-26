@@ -1,68 +1,54 @@
-import prisma from "../db";
-import { comparePassword, createJWT, findToken, storeToken, validateRefreshToken } from "../modules/auth";
-import { hashPassword } from "../modules/auth";
+import UnauthorizeError from "../exeptions/UnauthorizedError";
+import NotFoundError from "../exeptions/NotFoundError";
+import JWTService from "../services/token-service";
+import UserService from "../services/user-service";
 
 class UserController {
-    async signUp(req, res, next) {
-        try {
-            const user = await prisma.user.create({
-                data: {
-                    username: req.body.username,
-                    password: await hashPassword(req.body.password),
-                }
-            })
-            const tokens = createJWT({id: user.id, username: user.username});
-            await storeToken(user, tokens.refreshToken);
-            res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true });
-            res.json(tokens);
-        } catch (error) {
-            next(error);
-        }
+    private userService: UserService;
+    private jwtService: JWTService;
+    
+    constructor() {
+        this.userService = new UserService();
+        this.jwtService = new JWTService();
     }
-    async signIn(req, res) {
-        const user = await prisma.user.findUnique({
-            where: {
-                username: req.body.username,
-            },
-        })
-        const isValid = comparePassword(req.body.password, user.password);
-        if(!isValid) {
-            res.status(401);
-            res.json({message: "Invalid"});
-            return;
-        }
-        const tokens = createJWT({id: user.id, username: user.username});
-        await storeToken(user, tokens.refreshToken);
+
+    signUp = async (req, res) => {
+        const user = await this.userService.create(req.body.username, req.body.password);
+        const tokens = this.jwtService.createJWT({id: user.id, username: user.username});
+        await this.jwtService.storeToken(user, tokens.refreshToken);
         res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true });
         res.json(tokens);
     }
 
-    async signOut(req, res) {
+    signIn = async (req, res) => {
+        console.log(this);
+        const user = await this.userService.login(req.body.username, req.body.password);
+        const tokens = this.jwtService.createJWT({id: user.id, username: user.username});
+        await this.jwtService.storeToken(user, tokens.refreshToken);
+        res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true });
+        res.json(tokens);
+    }
+
+    signOut = async (req, res) => {
         const {refreshToken} = req.cookies;
-        await prisma.token.delete({
-            where: {
-                user_id: req.body.user.id
-            }
-        })
+        await this.userService.logout(req.body.user.id);
         res.clearCookie("refreshToken");
         res.status(200);
     }
 
-    async refresh(req, res) {
+    refresh = async (req, res) => {
         const {refreshToken} = req.cookies;
         if(!refreshToken) {
-            res.status(401);
-            return;
+            throw new UnauthorizeError();
         }
-        const user = validateRefreshToken(refreshToken);
-        const tokenFromDB = findToken(refreshToken);
+        const user = this.jwtService.validateRefreshToken(refreshToken);
+        const tokenFromDB = this.jwtService.findToken(refreshToken);
         if(!user && !tokenFromDB) {
-            res.status(404);
-            return;
+            throw new NotFoundError("token", refreshToken);
         }
     
-        const tokens = createJWT({id: user.id, username: user.username});
-        await storeToken(user, tokens.refreshToken);
+        const tokens = this.jwtService.createJWT({id: user.id, username: user.username});
+        await this.jwtService.storeToken(user, tokens.refreshToken);
         res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true });
         res.json(tokens);
     }

@@ -1,85 +1,38 @@
-import prisma from "../db";
-import { Request } from "express";
-import ApiError from "../exeptions/api-error";
+import UpdateService from "../services/update-service";
+import catcher from "../utils/errorHandling";
 
 class UpdateController {
-    async getUpdates(req, res, next) {
-        try {
-            const updates = await prisma.update.findMany({
-                where: {
-                    product_id: Number(req.params.product_id),
-                },
-            });
-            if(!updates) {
-                throw ApiError.BadRequest("Invalid input");
-            }
-            res.status(200).json({data: updates});
-        } catch(error) {
-            next(error);
-        }
+    private updateService: UpdateService;
+
+    constructor() {
+        this.updateService = new UpdateService();
     }
 
-    async getUpdate(req, res, next) {
-        try {
-            const update = await prisma.update.findFirst({
-                where: {
-                    id: Number(req.params.id),
-                    product_id: Number(req.params.product_id),
-                }
-            })
-            if(!update) {
-                throw ApiError.BadRequest("Invalid Input");
-            }
-            res.status(200).json({data: update});
-        } catch(error) {
-            next(error);
-        }
+    get = async (req, res) => {
+        const updates = await this.updateService.get(Number(req.params.product_id));
+        res.status(200).json({data: updates});
     }
 
-    async createUpdate(req, res, next) {
-        try {
-            req.body.product_id = Number(req.params.product_id);
-            const update = await prisma.update.create({
-                data: req.body
-            })
-            res.status(200).json(update);
-        } catch(error) {
-            next(error);
-        }
+    find = async (req, res) => {
+        const update = await this.updateService.find(Number(req.params.product_id), Number(req.params.id));
+        res.status(200).json({data: update});
     }
 
-    async editUpdate(req, res, next) {
-        try {
-            req.body.product_id = Number(req.params.product_id);
-            const update = await prisma.update.update({
-                where: {
-                    id: Number(req.params.id)
-                },
-                data: req.body
-            })
-            if(!update) {
-                throw ApiError.BadRequest("Invalid input");
-            }
-            res.status(200).json(update);
-        } catch(error) {
-            next(error);
-        }
+    create = async (req, res) => {
+        req.body.product_id = Number(req.params.product_id);
+        const update = await this.updateService.create(req.body);
+        res.status(200).json(update);
     }
 
-    async destroyUpdate(req, res, next) {
-        try {
-            const update = await prisma.update.delete({
-                where: {
-                    id: Number(req.params.id),
-                }
-            });
-            if(!update) {
-                throw ApiError.BadRequest("Invalid input");
-            }
-            res.status(200).json([]);
-        } catch(error) {
-            next(error);
-        }
+    update = async (req, res) => {
+        req.body.product_id = Number(req.params.product_id);
+        const update = await this.updateService.update(Number(req.params.id), req.body);
+        res.status(200).json(update);
+    }
+
+    delete = async (req, res) => {
+        const update = await this.updateService.delete(Number(req.params.id))
+        res.status(200).json([]);
     }
 }
 

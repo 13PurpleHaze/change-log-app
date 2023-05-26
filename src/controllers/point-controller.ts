@@ -1,83 +1,40 @@
 import prisma from '../db';
-import ApiError from '../exeptions/api-error';
+import BadRequestError from '../exeptions/BadRequestError';
+import NotFoundError from '../exeptions/NotFoundError';
+import PointService from '../services/point-service';
 
 class PointController {
-    async getPoint(req, res, next) {
-        try {
-            const point = await prisma.updatePoint.findUnique({
-                where: {
-                    id: Number(req.params.id)
-                }
-            })
-            if(!point) {
-                throw ApiError.BadRequest("Invalid input");
-            }
-            res.status(200).json(point);
-        } catch(error) {
-            next(error);
-        }
+    private pointService;
+
+    constructor() {
+        this.pointService = new PointService();
     }
 
-    async getPoints(req, res, next) {
-        try {
-            const points = await prisma.updatePoint.findMany({
-                where: {
-                    update_id: Number(req.params.update_id),
-                }
-            });
-            if(!points) {
-                throw ApiError.BadRequest("Invalid input");
-            }
-            res.status(200).json(points);
-        } catch(error) {
-            next(error);
-        }
+    find = async (req, res) => {
+        const point = await this.pointService.find(Number(req.params.id));
+        res.status(200).json(point);
     }
 
-    async createPoint(req, res, next) {
-        try {
-            req.body.update_id = Number(req.params.update_id);
-            const point = await prisma.updatePoint.create({
-                data: req.body
-            });
-            res.status(200).json(point);
-        } catch(error) {
-            next(error);
-        }
+    get = async (req, res) => {
+        const points = await this.pointService.get(Number(req.params.update_id));
+        res.status(200).json(points);
     }
 
-    async editPoint(req, res, next) {
-        try {
-            req.body.update_id = Number(req.params.update_id);
-            const point = await prisma.updatePoint.update({
-                where: {
-                    id: Number(req.params.id),
-                },
-                data: req.body,
-            })
-            if(!point) {
-                throw ApiError.BadRequest("Invalid input");
-            }
-            res.status(200).json(point);
-        } catch(error) {
-            next(error);
-        }
+    create = async (req, res) => {
+        req.body.update_id = Number(req.params.update_id);
+        const point = await this.pointService.create(req.body);
+        res.status(200).json(point);
     }
 
-    async destroyPoint(req, res, next) {
-        try {
-            const point = await prisma.updatePoint.delete({
-                where: {
-                    id: Number(req.params.id)
-                }
-            });
-            if(!point) {
-                throw ApiError.BadRequest("Invalid input");
-            }
-            res.status(200).json([]);
-        } catch(error) {
-            next(error);
-        }
+    update = async (req, res) => {
+        req.body.update_id = Number(req.params.update_id);
+        const point = await this.pointService.update(Number(req.params.id), req.body);
+        res.status(200).json(point);
+    }
+
+    delete = async (req, res) => {
+        const point = await this.pointService.delete(Number(req.params.id));
+        res.status(200).json({"message": "success"});
     }
 }
 

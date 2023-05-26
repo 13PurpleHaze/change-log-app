@@ -1,6 +1,6 @@
 import { body, param } from "express-validator";
 import prisma from "../db";
-import ApiError from "../exeptions/api-error";
+import NotFoundError from "../exeptions/NotFoundError";
 
 export const getUpdateRules = [
     param('id').notEmpty().isInt(),
@@ -24,7 +24,7 @@ export const createUpdateRules = [
             }
         });
         if (!product) {
-            throw ApiError.BadRequest("Invalid input");
+            throw new NotFoundError('product', value);
         }
     }),
 ];
@@ -42,7 +42,7 @@ export const editUpdatesRules = [
             }
         });
         if (!product) {
-            throw ApiError.BadRequest("Invalid input");
+            throw new NotFoundError('product', value);
         }
     }),
 ];
