@@ -1,6 +1,6 @@
 import prisma from "../db";
 import { hashPassword, comparePassword } from "../utils/passwordHash";
-import UnauthorizeError from "../exeptions/UnauthorizedError";
+import { UnauthorizedError } from "../exeptions/UnauthorizedError";
 
 class UserService {
     async create(username, password) {
@@ -21,7 +21,7 @@ class UserService {
         })
         const isValid = comparePassword(user.password, password);
         if(!isValid) {
-            throw new UnauthorizeError();
+            throw new UnauthorizedError();
         }
         return user;
     }

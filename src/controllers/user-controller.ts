@@ -1,4 +1,4 @@
-import UnauthorizeError from "../exeptions/UnauthorizedError";
+import { UnauthorizedError } from "../exeptions/UnauthorizedError";
 import NotFoundError from "../exeptions/NotFoundError";
 import JWTService from "../services/token-service";
 import UserService from "../services/user-service";
@@ -39,7 +39,7 @@ class UserController {
     refresh = async (req, res) => {
         const {refreshToken} = req.cookies;
         if(!refreshToken) {
-            throw new UnauthorizeError();
+            throw new UnauthorizedError();
         }
         const user = this.jwtService.validateRefreshToken(refreshToken);
         const tokenFromDB = this.jwtService.findToken(refreshToken);

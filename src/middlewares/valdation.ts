@@ -6,7 +6,7 @@ export const validate = (req, res, next) => {
     const errors = validationResult(req);
     console.log(errors.array()[0]);
     if(!errors.isEmpty()) {
-        res.status(400).json({error: `${errors.array()[0].msg}`});
+        throw new BadRequestError(`${errors.array()[0].msg}`);
     } else {
         next();
     }

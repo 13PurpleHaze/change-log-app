@@ -1,16 +1,15 @@
 import jwt from "jsonwebtoken";
-import UnauthorizeError from "../exeptions/UnauthorizedError";
+import { UnauthorizedError } from "../exeptions/UnauthorizedError";
 
 export const auth = (req, res, next) => {
     const bearer = req.headers.authorization;
-    
     if(!bearer) {
-        throw new UnauthorizeError();
+        throw new UnauthorizedError();
     }
     
     const [, token] = bearer.split(" ");
     if(!token) {
-        throw new UnauthorizeError();
+        throw new UnauthorizedError();
     }
 
     try {
@@ -18,6 +17,6 @@ export const auth = (req, res, next) => {
         req.user = payload;
         next();
     } catch(error) {
-        res.status(401).json({error: "Unauthorize"});
+        throw new UnauthorizedError();
     }
 }

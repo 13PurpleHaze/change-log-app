@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import router from "./routes";
 import dotenv from "dotenv";
 import errorsMapper from "./middlewares/error";
+import { UnauthorizedError } from "./exeptions/UnauthorizedError";
 
 dotenv.config()
 
