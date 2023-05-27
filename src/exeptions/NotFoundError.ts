@@ -1,6 +1,6 @@
 class NotFoundError extends Error {
-    constructor(entity, id) {
-        super(`Entity ${entity} with id=${id} not found`);
+    constructor(message) {
+        super(message);
         Object.setPrototypeOf(this, NotFoundError.prototype);
     }
 }

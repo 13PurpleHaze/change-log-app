@@ -3,7 +3,7 @@ import { hashPassword, comparePassword } from "../utils/passwordHash";
 import { UnauthorizedError } from "../exeptions/UnauthorizedError";
 
 class UserService {
-    async create(username, password) {
+    create = async (username, password) => {
         const user = await prisma.user.create({
             data: {
                 username: username,
@@ -13,25 +13,26 @@ class UserService {
         return user;
     }
 
-    async login(username, password) {
+    login = async (username, password) => {
         const user = await prisma.user.findUnique({
             where: {
                 username
             },
         })
-        const isValid = comparePassword(user.password, password);
+        const isValid = await comparePassword(password, user.password);
         if(!isValid) {
             throw new UnauthorizedError();
         }
         return user;
     }
 
-    async logout(id) {
-        await prisma.token.delete({
+    logout = async (id: number) => {
+        const result = await prisma.token.delete({
             where: {
                 user_id: id
             }
         })
+        return result;
     }
 }
 

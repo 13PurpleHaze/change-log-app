@@ -16,41 +16,34 @@ class UserController {
         const user = await this.userService.create(req.body.username, req.body.password);
         const tokens = this.jwtService.createJWT({id: user.id, username: user.username});
         await this.jwtService.storeToken(user, tokens.refreshToken);
-        res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true });
-        res.json(tokens);
+        res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true }).json(tokens);
     }
 
     signIn = async (req, res) => {
-        console.log(this);
         const user = await this.userService.login(req.body.username, req.body.password);
         const tokens = this.jwtService.createJWT({id: user.id, username: user.username});
         await this.jwtService.storeToken(user, tokens.refreshToken);
-        res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true });
-        res.json(tokens);
+        res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true }).json(tokens);
     }
 
     signOut = async (req, res) => {
-        const {refreshToken} = req.cookies;
-        await this.userService.logout(req.body.user.id);
+        const refreshToken = req.cookies.refreshToken;
+        const result = await this.userService.logout(Number(req.user.id));
         res.clearCookie("refreshToken");
-        res.status(200);
+        res.status(200).end();
     }
 
     refresh = async (req, res) => {
-        const {refreshToken} = req.cookies;
-        if(!refreshToken) {
-            throw new UnauthorizedError();
-        }
+        const refreshToken = req.cookies.refreshToken;
+        
         const user = this.jwtService.validateRefreshToken(refreshToken);
         const tokenFromDB = this.jwtService.findToken(refreshToken);
         if(!user && !tokenFromDB) {
-            throw new NotFoundError("token", refreshToken);
+            throw new NotFoundError(`entity with id=${refreshToken} not found in token`);
         }
-    
         const tokens = this.jwtService.createJWT({id: user.id, username: user.username});
         await this.jwtService.storeToken(user, tokens.refreshToken);
-        res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true });
-        res.json(tokens);
+        res.cookie("refreshToken", tokens.refreshToken, { maxAge: 30*24*60*60*1000, httpOnly: true }).json(tokens);
     }
 }
 

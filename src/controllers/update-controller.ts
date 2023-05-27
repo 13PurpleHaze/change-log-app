@@ -21,17 +21,17 @@ class UpdateController {
     create = async (req, res) => {
         req.body.product_id = Number(req.params.product_id);
         const update = await this.updateService.create(req.body);
-        res.status(200).json(update);
+        res.status(200).json({data: update});
     }
 
     update = async (req, res) => {
         req.body.product_id = Number(req.params.product_id);
-        const update = await this.updateService.update(Number(req.params.id), req.body);
-        res.status(200).json(update);
+        const update = await this.updateService.update(Number(req.params.id), req.body, Number(req.params.product_id));
+        res.status(200).json({data: update});
     }
 
     delete = async (req, res) => {
-        const update = await this.updateService.delete(Number(req.params.id))
+        const update = await this.updateService.delete(Number(req.params.id), Number(req.params.product_id))
         res.status(200).json([]);
     }
 }

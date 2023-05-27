@@ -2,7 +2,6 @@ import BadRequestError from "../exeptions/BadRequestError";
 import NotFoundError from "../exeptions/NotFoundError";
 import { UnauthorizedError } from "../exeptions/UnauthorizedError";
 const errorsMapper = (err, req, res, next) => {
-    console.log(err.name);
     if(err instanceof NotFoundError) {
          res.status(404).json({error: err.message});
     } else if(err instanceof UnauthorizedError) {

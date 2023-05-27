@@ -11,7 +11,7 @@ const router = Router();
 router.use("/auth", authRouter);
 router.use("/products", catcher(auth), productRouter);
 router.use(errorsMapper);
-router.use(auth, updateRouter);
-router.use(auth, pointRouter);
+router.use(catcher(auth), updateRouter);
+router.use(catcher(auth), pointRouter);
 
 export default router;

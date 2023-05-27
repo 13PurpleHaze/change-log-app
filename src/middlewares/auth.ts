@@ -17,6 +17,7 @@ export const auth = (req, res, next) => {
         req.user = payload;
         next();
     } catch(error) {
+        console.log(3);
         throw new UnauthorizedError();
     }
 }

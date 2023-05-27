@@ -11,13 +11,14 @@ class JWTService {
   
     const refreshToken = jwt.sign(
       { id: user.id, username: user.username },
-      process.env.JWT_ACCESS,
+      process.env.JWT_REFRESH,
       {expiresIn: "30d"}
     );
     return {accessToken, refreshToken};
   }
   
   async storeToken(user, refreshToken) {
+    console.log(user, refreshToken);
     const usersToken = await prisma.token.findUnique({
       where: {
         user_id: user.id

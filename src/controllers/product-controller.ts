@@ -19,16 +19,16 @@ class ProductController {
 
     create = async (req, res) => {
         const product =  await this.productService.create(req.body.name, Number(req.user.id));
-        res.status(200).json([]);
+        res.status(200).json({data: product});
     }
 
     update = async (req, res) => {
-        const product = await this.productService.update(req.body.name, Number(req.params.id));
+        const product = await this.productService.update(Number(req.user.id), req.body.name, Number(req.params.id));
         res.status(200).json({data: product});
     }
 
     delete = async (req, res) => {
-        const product = await this.productService.delete(Number(req.params.id));
+        const product = await this.productService.delete(Number(req.params.id), Number(req.user.id));
         res.status(200).json([]);
     }
 }

@@ -10,7 +10,7 @@ class PointService {
             }
         })
         if(!point) {
-            throw new NotFoundError("point", id);
+            throw new NotFoundError(`entity with id=${id} not found in point`);
         }
         return point;
     }
@@ -34,20 +34,35 @@ class PointService {
         return point;
     }
 
-    async update(id: number, data) {
+    async update(id: number, data, update_id: number) {
+        const _point = await prisma.updatePoint.findFirst({
+            where: {
+                id,
+                update_id,
+            },
+        })
+        if(!_point) {
+            throw new NotFoundError(`Entity with id=${id} not found in update-point`);
+        }
         const point = await prisma.updatePoint.update({
             where: {
                 id,
             },
             data: data,
         })
-        if(!point) {
-            throw new NotFoundError("update-point", id);
-        }
         return point;
     }
 
-    async delete(id: number) {
+    async delete(id: number, update_id: number) {
+        const _point = await prisma.updatePoint.findFirst({
+            where: {
+                id,
+                update_id,
+            },
+        })
+        if(!_point) {
+            throw new NotFoundError(`Entity with id=${id} not found in update-point`);
+        }
         const point = await prisma.updatePoint.delete({
             where: {
                 id

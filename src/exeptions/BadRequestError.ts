@@ -1,6 +1,6 @@
 class BadRequestError extends Error {
     constructor(message = "") {
-        super(`Bad request: ${message}`);
+        super(`${message}`);
         Object.setPrototypeOf(this, BadRequestError.prototype);
     }
 }
